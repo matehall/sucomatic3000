@@ -1,28 +1,34 @@
 #include <LiquidCrystal.h>
 
+const int box_empty_level = 60;
+const int box_full_level = 45;
+
 //ultrasonic sound
 const int triggerPin = 13;
 const int echoPin = 12;
 
-const int box_empty_level = 60;
-const int box_full_level = 45;
 long fuel_level = 0;
 
+
+//States
 const int EMPTY = 1;
 const int FULL = 0;
 int last_major_state = EMPTY;
 
-
+//Vac control
 const int ON_BUTTON = 2;
 const int OFF_BUTTON = 3;
 const int VAC_OFF = 0;
 const int VAC_ON = 1;
 const int CYCLON_FULL = 400;
-
 int vac_state = VAC_OFF;
-int photoResistorValue = 0;
 
-const int lightPin = 0; 
+//Cyclon level control
+int photoResistorValue = 0;
+const int lamp_pin = 11;
+
+
+const int photoresistor_pin = 0; 
 const int lcd_rs = 10;
 const int lcd_enable =9;
 const int lcd_d4 = 4;
@@ -32,8 +38,7 @@ const int lcd_d7 = 7;
 const int lcd_columns =16;
 const int lcd_row = 2;
 
-//Light control
-const int light = 11;
+
 
 LiquidCrystal lcd(lcd_rs, lcd_enable, lcd_d4, lcd_d5, lcd_d6, lcd_d7);
 
@@ -45,7 +50,7 @@ void setup() {
   pinMode(ON_BUTTON, OUTPUT);
   pinMode(OFF_BUTTON, OUTPUT); 
   pinMode(echoPin, INPUT);
-  pinMode(light, OUTPUT);
+  pinMode(lamp_pin, OUTPUT);
 
   lcd.begin(lcd_columns, lcd_row);
 }
@@ -54,10 +59,11 @@ void loop()
 {
 
   fuel_level = get_fuel_level();
-  photoResistorValue = analogRead(lightPin);
+  photoResistorValue = analogRead(photoresistor_pin);
 
   lcd.setCursor(0, 0);
-  lcd.print("R:");
+  lcd.print("R:     ");
+  lcd.setCursor(2, 0);
   lcd.print(photoResistorValue);
 
   lcd.setCursor(0, 1);
@@ -169,11 +175,11 @@ boolean vac_is_off(){
 
 void turn_light_on()
 {
-  digitalWrite(light, HIGH);
+  digitalWrite(lamp_pin, HIGH);
 }
 
 void turn_light_off(){
-  digitalWrite(light, LOW);
+  digitalWrite(lamp_pin, LOW);
 }
 
 

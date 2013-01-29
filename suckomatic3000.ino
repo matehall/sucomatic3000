@@ -32,6 +32,9 @@ const int lcd_d7 = 7;
 const int lcd_columns =16;
 const int lcd_row = 2;
 
+//Light control
+const int light = 11;
+
 LiquidCrystal lcd(lcd_rs, lcd_enable, lcd_d4, lcd_d5, lcd_d6, lcd_d7);
 
 void setup() {
@@ -42,6 +45,7 @@ void setup() {
   pinMode(ON_BUTTON, OUTPUT);
   pinMode(OFF_BUTTON, OUTPUT); 
   pinMode(echoPin, INPUT);
+  pinMode(light, OUTPUT);
 
   lcd.begin(lcd_columns, lcd_row);
 }
@@ -64,8 +68,6 @@ void loop()
   //Serial.print(fuel_level);
   //Serial.print("fuel_level");
   //Serial.println();
-  
-  
 
   lcd.setCursor(8, 0);
   lcd.print("S1:     ");
@@ -73,32 +75,30 @@ void loop()
 
   if (box_is_empty()){
     lcd.print("Empty");
-    //lightsOn();
+     turn_light_on();
     last_major_state = EMPTY;
 
   }
   else if(box_is_full()){
     lcd.print("Full");
     last_major_state = FULL;  
-   //lightsOff(); 
     turn_vac_off();//Just to be sure.
+    turn_light_off();
   }
   else{
     lcd.print("Normal");
   }
-
-
+  
   lcd.setCursor(8, 1);
   lcd.print("Vac:     ");
   lcd.setCursor(12, 1);
 
   if (last_major_state == EMPTY){
     if(cyclon_is_full(photoResistorValue)){
-      
       lcd.print("OFF");
       turn_vac_off();
     }
-    else{   
+    else{ 
       turn_vac_on();
       lcd.print("ON");
     }
@@ -165,6 +165,15 @@ boolean vac_is_on(){
 
 boolean vac_is_off(){
   return vac_state == VAC_OFF;
+}
+
+void turn_light_on()
+{
+  digitalWrite(light, HIGH);
+}
+
+void turn_light_off(){
+  digitalWrite(light, LOW);
 }
 
 
